@@ -8,7 +8,7 @@ use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader, BufWrit
 use tokio::select;
 use tokio::sync::{broadcast, mpsc, oneshot};
 use tokio::task::JoinHandle;
-use tracing::{debug, error, info, info_span, Instrument};
+use tracing::{debug, error, info, info_span, Instrument, warn};
 use tracing_subscriber::prelude::__tracing_subscriber_SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
@@ -26,7 +26,7 @@ async fn main() -> Result<()> {
         .with(tracing_subscriber::fmt::layer().compact())
         .init();
 
-    let listener = TcpListener::bind("[::]:5555").await?;
+    let listener = TcpListener::bind("[::]:5554").await?;
     let target: SocketAddr = TARGET.parse().unwrap();
 
     loop {
@@ -43,9 +43,9 @@ async fn main() -> Result<()> {
 fn do_the_boguscoin_rewrite(input: &str) -> String {
     let input = input.strip_suffix('\n').unwrap_or(input);
 
-    if input.starts_with('*') {
-        return input.to_string();
-    }
+    // if input.starts_with('*') {
+    //     return input.to_string();
+    // }
 
     let mut words: Vec<&str> = input.split_ascii_whitespace().collect();
 
@@ -103,8 +103,10 @@ async fn forward(
         let mut line = String::with_capacity(1024);
 
         loop {
+            line.clear();
             let bytes_read = inbound_r.read_line(&mut line).await?;
-            if bytes_read == 0 {
+            if bytes_read <= 1 {
+                warn!("EOF");
                 break;
             }
 
@@ -125,8 +127,10 @@ async fn forward(
         let mut line = String::with_capacity(1024);
 
         loop {
+            line.clear();
             let bytes_read = outbound_r.read_line(&mut line).await?;
-            if bytes_read == 0 {
+            if bytes_read <= 1 {
+                warn!("EOF");
                 break;
             }
 
