@@ -12,3 +12,9 @@ primes = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.21", features = ["full"] }
+tracing = { version = "0.1.37", features = [] }
+tracing-subscriber = { version = "0.3.16", features = [
+    "env-filter",
+    "local-time",
+    "parking_lot",
+] }
