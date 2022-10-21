@@ -53,7 +53,7 @@ enum OutgoingEvent {
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let listener = TcpListener::bind("[::]:5554").await?;
+    let listener = TcpListener::bind("[::]:5555").await?;
 
     let (incoming_event_tx, mut incoming_event_rx) = mpsc::channel::<IncomingEvent>(128);
     let (outgoing_event_tx, _) = broadcast::channel::<OutgoingEvent>(128);
